@@ -107,6 +107,7 @@ class UnetModel(nn.Module):
 
         thro = self.to_vec(down3)
         temb = self.timestep_embedding(t)
+        temb = temb.unsqueeze(2).unsqueeze(3)
 
         thro = self.up0(thro + temb)
 

@@ -1,4 +1,5 @@
 import torch
+import os
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.datasets import CIFAR10
@@ -13,6 +14,7 @@ def main(device: str, num_epochs: int = 100):
         eps_model=UnetModel(3, 3, hidden_size=128),
         betas=(1e-4, 0.02),
         num_timesteps=1000,
+        device=device
     )
     ddpm.to(device)
 
@@ -27,12 +29,16 @@ def main(device: str, num_epochs: int = 100):
         transform=train_transforms,
     )
 
-    dataloader = DataLoader(dataset, batch_size=128, num_workers=4, shuffle=True)
-    optim = torch.optim.Adam(ddpm.parameters(), lr=1e-5)
+    # subdata = torch.utils.data.Subset(dataset, range(8))
+    dataloader = DataLoader(dataset, batch_size=128, num_workers=8, shuffle=True)
+    optim = torch.optim.Adam(ddpm.parameters(), lr=1e-4)
 
+    os.makedirs("samples", exist_ok=True)
     for i in range(num_epochs):
         train_epoch(ddpm, dataloader, optim, device)
         generate_samples(ddpm, device, f"samples/{i:02d}.png")
+
+    torch.save(ddpm.state_dict(), "ddpm.pt")
 
 
 if __name__ == "__main__":
