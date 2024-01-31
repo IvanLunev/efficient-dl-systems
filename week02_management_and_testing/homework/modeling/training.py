@@ -28,11 +28,11 @@ def train_epoch(model: DiffusionModel, dataloader: DataLoader, optimizer: Optimi
     return loss_ema.cpu().item()
 
 
-def generate_samples(model: DiffusionModel, device: str, count: int=8, path: str | None=None, save: bool=True):
+def generate_samples(model: DiffusionModel, device: str, count: int=8, path: str | None=None):
     model.eval()
     with torch.no_grad():
         samples = model.sample(count, (3, 32, 32), device=device)
         grid = make_grid(samples, nrow=math.ceil(count ** (1/2)))
-        if save and path:
+        if path:
             save_image(grid, path)
         return grid

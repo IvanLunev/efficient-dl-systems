@@ -28,6 +28,6 @@ modeling/training.py      32      0   100%
 # Task 3
 
 * Transformed ```hparam.py``` into ```conf/config.yaml```
-* Config logged via ```log_artifact```
+* Config added in ```wandb.init```
 * Added chose of optimazer
 * Added existence of random flip augmentations

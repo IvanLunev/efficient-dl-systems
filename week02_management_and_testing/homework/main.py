@@ -17,7 +17,11 @@ import hydra
 
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def main(config: DictConfig):
-    wandb.init(project="week02_management_and_testing-homework", name=config.experiment_name)
+
+    wandb.init(
+        project=config.wandb.project, name=config.wandb.experiment,
+        config = OmegaConf.to_container(config, resolve=True, throw_on_missing=True)
+    )
 
     if config.solver.device == "cuda":
         device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -25,7 +29,6 @@ def main(config: DictConfig):
         device = "cpu"
     print(f"Selected device: {device}")
 
-    wandb.log_artifact("conf/config.yaml")
 
     ddpm = DiffusionModel(
         eps_model=UnetModel(3, 3, hidden_size=config.model.hidden_size),
@@ -84,6 +87,7 @@ def main(config: DictConfig):
 
 
     torch.save(ddpm.state_dict(), "ddpm.pt")
+    wandb.finish()
 
 
 if __name__ == "__main__":

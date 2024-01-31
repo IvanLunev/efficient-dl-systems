@@ -1,4 +1,6 @@
-experiment_name: "Default experiment"
+wandb:
+  project: "week02_management_and_testing-homework"
+  experiment: "Default experiment"
 model:
   hidden_size: 128
   betas: [0.0001, 0.02]
@@ -8,8 +10,8 @@ solver:
   batch_size: 128
   num_workers: 8
   device: "cuda"
-  num_epochs: 10
+  num_epochs: 100
   momentum: 0.95
-  optimazer: "adam"  # "sgd"
+  optimazer: "adam"
 data:
-  flip_aug: True
+  flip_aug: False
