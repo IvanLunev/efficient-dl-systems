@@ -1,0 +1,15 @@
+experiment_name: "Default experiment"
+model:
+  hidden_size: 128
+  betas: [0.0001, 0.02]
+  num_timesteps: 1000
+solver:
+  lr: 0.0005
+  batch_size: 128
+  num_workers: 8
+  device: "cuda"
+  num_epochs: 10
+  momentum: 0.95
+  optimazer: "adam"  # "sgd"
+data:
+  flip_aug: True

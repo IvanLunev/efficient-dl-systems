@@ -11,3 +11,23 @@
 * In ```test_diffusion``` added test of ```sample```
 * To pass ```test_train_on_one_batch``` added ```device``` attribute to the ```DiffusionModel```
 * Implemented ```test_training``` that check training pipline of the 'cuda' and 'cpu' devices. After wrong outputs (images had only noise) found in ```DiffusionModel.forward``` that ```rand_like``` should be changed to ```randn_like```
+* Coverage:
+```
+Name                   Stmts   Miss  Cover
+------------------------------------------
+modeling/training.py      32      0   100%
+```
+
+
+# Task 2
+
+* All training hyperparameters and models hyperpaameters added to ```hparams.py``` file
+* wandb logging of all hyperparameters, training loss, learning rate added
+* wandb logging of input and generated images from each epoch added
+
+# Task 3
+
+* Transformed ```hparam.py``` into ```conf/config.yaml```
+* Config logged via ```log_artifact```
+* Added chose of optimazer
+* Added existence of random flip augmentations

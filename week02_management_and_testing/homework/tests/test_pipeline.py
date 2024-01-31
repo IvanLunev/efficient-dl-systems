@@ -69,4 +69,4 @@ def test_training(device, train_dataset):
     x, _ = next(iter(dataloader))
     grid = make_grid(x, nrow=4)
     save_image(grid, f"tests/test_out/{device}_in.png")
-    generate_samples(ddpm, device, f"tests/test_out/{device}_out.png")
+    generate_samples(ddpm, device, path=f"tests/test_out/{device}_out.png")

@@ -33,10 +33,8 @@ class DiffusionModel(nn.Module):
 
         return self.criterion(eps, self.eps_model(x_t, timestep / self.num_timesteps))
 
-    def sample(self, num_samples: int, size, device) -> torch.Tensor:
-
+    def sample(self, num_samples: int, size: Tuple, device: str) -> torch.Tensor:
         x_i = torch.randn(num_samples, *size).to(self.device)
-
         for i in range(self.num_timesteps, 0, -1):
             z = torch.randn(num_samples, *size).to(self.device) if i > 1 else 0
             eps = self.eps_model(x_i, torch.tensor(i / self.num_timesteps).repeat(num_samples, 1).to(device))
