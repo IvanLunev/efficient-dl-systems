@@ -1,5 +1,4 @@
 import torch
-import os
 import wandb
 import math
 from torch.utils.data import DataLoader
@@ -17,13 +16,14 @@ import hydra
 
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def main(config: DictConfig):
+    print(OmegaConf.to_yaml(config))
 
     wandb.init(
         project=config.wandb.project, name=config.wandb.experiment,
         config = OmegaConf.to_container(config, resolve=True, throw_on_missing=True)
     )
 
-    if config.solver.device == "cuda":
+    if config.optimizer.device == "cuda":
         device = "cuda" if torch.cuda.is_available() else "cpu"
     else:
         device = "cpu"
@@ -40,7 +40,7 @@ def main(config: DictConfig):
     wandb.watch(ddpm)
 
     transforms_list = [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-    if config.data.flip_aug:
+    if config.dataset.flip_aug:
         transforms_list.append(transforms.RandomHorizontalFlip())
 
     train_transforms = transforms.Compose(transforms_list)
@@ -48,22 +48,21 @@ def main(config: DictConfig):
     dataset = CIFAR10(
         "cifar10",
         train=True,
-        download=True,
         transform=train_transforms,
     )
 
-    dataloader = DataLoader(dataset, batch_size=config.solver.batch_size, 
-                            num_workers=config.solver.num_workers, shuffle=True)
-    if config.solver.optimazer == "adam":
-        optim = torch.optim.Adam(ddpm.parameters(), lr=config.solver.lr)
-    elif config.solver.optimazer == "sgd":
-        optim = torch.optim.SGD(ddpm.parameters(), lr=config.solver.lr, momentum=config.solver.momentum)
+    dataloader = DataLoader(dataset, batch_size=config.optimizer.batch_size, 
+                            num_workers=config.optimizer.num_workers, shuffle=True)
+    if config.optimizer.name == "adam":
+        optim = torch.optim.Adam(ddpm.parameters(), lr=config.optimizer.lr)
+    elif config.optimizer.name == "sgd":
+        optim = torch.optim.SGD(ddpm.parameters(), lr=config.optimizer.lr, momentum=config.optimizer.momentum)
     else:
         print("Wrong option for optimazer!")
         return
 
 
-    for epoch in range(config.solver.num_epochs):
+    for epoch in range(config.optimizer.num_epochs):
         train_loss = train_epoch(ddpm, dataloader, optim, device)
         current_step = (epoch + 1) * len(dataset)
 

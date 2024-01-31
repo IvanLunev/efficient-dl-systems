@@ -1,0 +1,33 @@
+schema: '2.0'
+stages:
+  prepare_data:
+    cmd: python data/prepare_data.py
+    deps:
+    - path: data/prepare_data.py
+      hash: md5
+      md5: afccd03e849e905b9d0e26bd0b78671a
+      size: 160
+    outs:
+    - path: cifar10
+      hash: md5
+      md5: e252d2c8ba36d1ab3e21a873ab62daa3.dir
+      size: 356712185
+      nfiles: 9
+  train:
+    cmd: python main.py
+    deps:
+    - path: conf
+      hash: md5
+      md5: 83a33643c38c788189f9d146ac5b4da8.dir
+      size: 424
+      nfiles: 6
+    - path: modeling
+      hash: md5
+      md5: 2b99ca3652e59564af2698264cc70584.dir
+      size: 15764
+      nfiles: 8
+    outs:
+    - path: ddpm.pt
+      hash: md5
+      md5: 58e8f104154012cbe945ed849fecf1de
+      size: 45471072

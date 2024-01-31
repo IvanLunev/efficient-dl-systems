@@ -1,0 +1,3 @@
+wandb:
+  project: "week02_management_and_testing-homework"
+  experiment: "Default experiment"

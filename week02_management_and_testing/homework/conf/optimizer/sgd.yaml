@@ -1,0 +1,7 @@
+name: "sgd"
+lr: 0.011
+batch_size: 128
+num_workers: 8
+device: "cuda"
+num_epochs: 100
+momentum: 0.95

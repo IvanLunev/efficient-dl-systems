@@ -1,17 +1,5 @@
-wandb:
-  project: "week02_management_and_testing-homework"
-  experiment: "Default experiment"
-model:
-  hidden_size: 128
-  betas: [0.0001, 0.02]
-  num_timesteps: 1000
-solver:
-  lr: 0.0005
-  batch_size: 128
-  num_workers: 8
-  device: "cuda"
-  num_epochs: 100
-  momentum: 0.95
-  optimazer: "adam"
-data:
-  flip_aug: False
+defaults:
+  - general
+  - dataset: cifar10
+  - model: ddpm
+  - optimizer: adam

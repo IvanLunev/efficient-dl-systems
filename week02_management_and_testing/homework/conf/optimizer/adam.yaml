@@ -1,0 +1,6 @@
+name: "adam"
+lr: 0.0005
+batch_size: 128
+num_workers: 8
+device: "cuda"
+num_epochs: 1

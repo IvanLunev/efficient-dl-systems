@@ -15,9 +15,8 @@
 ```
 Name                   Stmts   Miss  Cover
 ------------------------------------------
-modeling/training.py      32      0   100%
+modeling/training.py      31      0   100%
 ```
-
 
 # Task 2
 
@@ -31,3 +30,9 @@ modeling/training.py      32      0   100%
 * Config added in ```wandb.init```
 * Added chose of optimazer
 * Added existence of random flip augmentations
+
+# Task 4
+
+* Added dvc pipeline
+* Added config groups
+* Added ```prepare_data.py``` script

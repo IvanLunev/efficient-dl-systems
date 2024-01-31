@@ -1,0 +1,14 @@
+stages:
+  prepare_data:
+    cmd: python data/prepare_data.py
+    deps:
+    - data/prepare_data.py
+    outs:
+    - cifar10
+  train:
+    cmd: python main.py
+    deps:
+    - modeling
+    - conf
+    outs:
+    - ddpm.pt
