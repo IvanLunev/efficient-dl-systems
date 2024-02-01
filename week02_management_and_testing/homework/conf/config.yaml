@@ -2,4 +2,4 @@ defaults:
   - general
   - dataset: cifar10
   - model: ddpm
-  - optimizer: adam
+  - optimizer: sgd

@@ -1,5 +1,5 @@
 name: "sgd"
-lr: 0.011
+lr: 0.001
 batch_size: 128
 num_workers: 8
 device: "cuda"
