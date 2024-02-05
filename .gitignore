@@ -130,3 +130,20 @@ dmypy.json
 
 .idea
 .DS_Store
+
+week02_management_and_testing/example_project/.dvc/
+week02_management_and_testing/example_project/.dvcignore
+week02_management_and_testing/example_project/.gitignore
+week02_management_and_testing/example_project/dvc.lock
+week02_management_and_testing/example_project/final_metrics.json
+week02_management_and_testing/example_project/run_id.txt
+week02_management_and_testing/example_project/wandb/
+week02_management_and_testing/homework/data/cifar-10-batches-py/
+week02_management_and_testing/homework/data/cifar-10-python.tar.gz
+week02_management_and_testing/homework_done.zip
+week02_management_and_testing/homework_done/
+
+week03_fast_pipelines/homework/task1/__MACOSX/
+week03_fast_pipelines/homework/task1/train/
+week03_fast_pipelines/homework/task1/train_masks/
+
