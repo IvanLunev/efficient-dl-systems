@@ -15,6 +15,22 @@ from torch.nn.modules.normalization import LayerNorm
 from torch.nn.parameter import Parameter
 
 
+class GPT2likeModel(nn.Module):
+    def __init__(self, n_tokens: int, hidden_size: int=1024, heads: int=8):
+        super().__init__()
+        self.embedding = nn.Embedding(n_tokens, hidden_size)
+        self.positional = PositionalEncoding(hidden_size)
+        self.decode_block = nn.TransformerDecoder(nn.TransformerDecoderLayer(hidden_size, heads), 1)
+        self.decoder = nn.Linear(hidden_size, n_tokens)
+
+    def forward(self, x: Tensor) -> Tensor:
+        x = self.embedding(x)
+        pos = self.positional(x.transpose(1, 0)).transpose(1, 0)
+        x = self.decode_block(pos, x)
+        output = self.decoder(x)
+        return output
+
+
 class TransformerModel(nn.Module):
     def __init__(self, ntoken: int, d_model: int, nhead: int, d_hid: int, nlayers: int, dropout: float = 0.5):
         super().__init__()

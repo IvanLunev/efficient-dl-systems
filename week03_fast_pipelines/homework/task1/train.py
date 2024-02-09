@@ -26,7 +26,7 @@ class StaticScaler():
         pass
 
 
-class DynamicScaler(torch.cuda.amp.GradScaler):
+class DynamicScaler():
     def __init__(self):
         self._scale: float = 2.0**8
         self.grad_check = True
