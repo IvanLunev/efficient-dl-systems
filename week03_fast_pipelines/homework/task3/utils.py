@@ -21,7 +21,7 @@ def get_device() -> torch.device:
 
 
 class Settings:
-    batch_size: int = 256
+    batch_size: int = 32
     epochs: int = 2
     lr: float = 3e-5
     gamma: float = 0.7

@@ -148,4 +148,9 @@ week03_fast_pipelines/homework/task1/train/
 week03_fast_pipelines/homework/task1/train_masks/
 week03_fast_pipelines/homework/task2/test.py
 week03_fast_pipelines/homework/task2/wikitext-103-raw/
+week03_fast_pipelines/seminar/data/
+week03_fast_pipelines/seminar/mnist/
+week03_fast_pipelines/seminar/profile.svg
+week03_fast_pipelines/homework/task3/data/
+week03_fast_pipelines/homework/task3/log/
 

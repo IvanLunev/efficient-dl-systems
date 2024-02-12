@@ -12,6 +12,10 @@ from tqdm import tqdm
 from utils import Settings, Clothes, seed_everything
 from vit import ViT
 
+import torch
+import torchvision.models as models
+from torch.profiler import ProfilerActivity, profile, record_function
+
 
 def get_vit_model() -> torch.nn.Module:
     model = ViT(
@@ -26,7 +30,7 @@ def get_vit_model() -> torch.nn.Module:
 
 
 def get_loaders() -> torch.utils.data.DataLoader:
-    dataset.download_extract_dataset()
+    # dataset.download_extract_dataset()
     train_transforms = dataset.get_train_transforms()
     val_transforms = dataset.get_val_transforms()
 
@@ -44,37 +48,49 @@ def get_loaders() -> torch.utils.data.DataLoader:
     print(f"Train Data: {len(train_data)}")
     print(f"Val Data: {len(val_data)}")
 
-    train_loader = DataLoader(dataset=train_data, batch_size=Settings.batch_size, shuffle=True)
-    val_loader = DataLoader(dataset=val_data, batch_size=Settings.batch_size, shuffle=False)
+    train_loader = DataLoader(dataset=train_data, batch_size=Settings.batch_size, 
+                              shuffle=True, num_workers=16) 
+    val_loader = DataLoader(dataset=val_data, batch_size=Settings.batch_size, 
+                            shuffle=False, num_workers=16)
 
     return train_loader, val_loader
 
 
-def run_epoch(model, train_loader, val_loader, criterion, optimizer) -> tp.Tuple[float, float]:
+def run_epoch(model, train_loader, val_loader, criterion, optimizer, prof=None) -> tp.Tuple[float, float]:
     epoch_loss, epoch_accuracy = 0, 0
     val_loss, val_accuracy = 0, 0
     model.train()
+    step = 0
     for data, label in tqdm(train_loader, desc="Train"):
+        if prof and step >= (1 + 1 + 3) * 2:
+            break
         data = data.to(Settings.device)
         label = label.to(Settings.device)
         output = model(data)
         loss = criterion(output, label)
-        acc = (output.argmax(dim=1) == label).float().mean()
-        epoch_accuracy += acc.item() / len(train_loader)
-        epoch_loss += loss.item() / len(train_loader)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
+        
+        with torch.no_grad():
+            acc = (output.argmax(dim=1) == label).float().mean()
+            epoch_accuracy += acc.item() / len(train_loader)
+            epoch_loss += loss.item() / len(train_loader)
+
+        if prof:
+            step += 1
+            prof.step()
 
     model.eval()
-    for data, label in tqdm(val_loader, desc="Val"):
-        data = data.to(Settings.device)
-        label = label.to(Settings.device)
-        output = model(data)
-        loss = criterion(output, label)
-        acc = (output.argmax(dim=1) == label).float().mean()
-        val_accuracy += acc.item() / len(train_loader)
-        val_loss += loss.item() / len(train_loader)
+    with torch.no_grad():
+        for data, label in tqdm(val_loader, desc="Val"):
+            data = data.to(Settings.device)
+            label = label.to(Settings.device)
+            output = model(data)
+            loss = criterion(output, label)
+            acc = (output.argmax(dim=1) == label).float().mean()
+            val_accuracy += acc.item() / len(train_loader)
+            val_loss += loss.item() / len(train_loader)
 
     return epoch_loss, epoch_accuracy, val_loss, val_accuracy
 
@@ -86,7 +102,14 @@ def main():
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=Settings.lr)
 
-    run_epoch(model, train_loader, val_loader, criterion, optimizer)
+    with torch.profiler.profile(
+        schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=2),
+        on_trace_ready=torch.profiler.tensorboard_trace_handler("./log/hid_256"),
+        record_shapes=True,
+        profile_memory=True,
+        with_stack=True,
+    ) as prof:
+        run_epoch(model, train_loader, val_loader, criterion, optimizer)#, prof)
 
 
 if __name__ == "__main__":

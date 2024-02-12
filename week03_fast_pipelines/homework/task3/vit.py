@@ -14,7 +14,7 @@ def pair(t):
 
 
 class FeedForward(nn.Module):
-    def __init__(self, dim, hidden_dim=255, dropout=0.0):
+    def __init__(self, dim, hidden_dim=256, dropout=0.0):
         super().__init__()
         self.net = nn.Sequential(
             nn.LayerNorm(dim),
@@ -32,7 +32,7 @@ class FeedForward(nn.Module):
 class Attention(nn.Module):
     def __init__(self, dim, heads=8, dim_head=64, dropout=0.0):
         super().__init__()
-        inner_dim = dim_head * heads
+        self.inner_dim = dim_head * heads
         project_out = not (heads == 1 and dim_head == dim)
 
         self.heads = heads
@@ -41,17 +41,16 @@ class Attention(nn.Module):
         self.attend = nn.Softmax(dim=-1)
         self.dropout = nn.Dropout(dropout)
         self.norm = nn.LayerNorm(dim)
-        self.queries = nn.Linear(dim, inner_dim, bias=False)
-        self.keys = nn.Linear(dim, inner_dim, bias=False)
-        self.values = nn.Linear(dim, inner_dim, bias=False)
+        self.qkv = nn.Linear(dim, self.inner_dim * 3, bias=False)
 
-        self.to_out = nn.Sequential(nn.Linear(inner_dim, dim), nn.Dropout(dropout)) if project_out else nn.Identity()
+        self.to_out = nn.Sequential(nn.Linear(self.inner_dim, dim), nn.Dropout(dropout)) if project_out else nn.Identity()
 
     def forward(self, x):
-        q = self.queries(x)
-        k = self.keys(x)
-        v = self.values(x)
-
+        qkv = self.qkv(x)
+        q = qkv[..., :self.inner_dim]
+        k = qkv[..., self.inner_dim:(2 * self.inner_dim)]
+        v = qkv[..., (2 * self.inner_dim):]
+        
         dots = torch.matmul(q, k.transpose(-1, -2)) * self.scale
 
         attn = self.attend(dots)
@@ -92,7 +91,7 @@ class ViT(nn.Module):
         num_classes,
         depth,
         heads,
-        dim=255,
+        dim=256,
         pool="cls",
         channels=3,
         dim_head=64,

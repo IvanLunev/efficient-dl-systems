@@ -129,14 +129,17 @@ class UltraDuperBigBrainBatchSampler(Sampler):
         return (len(self.dataset) + self.batch_size - 1) // self.batch_size
 
     def __iter__(self):
+        # choose random lengths
         probs = self.count_to_len[:, 0] / sum(self.count_to_len[:, 0])
         inds = np.random.choice(len(self.count_to_len), self.__len__(), p=probs)
         for ind in inds:
+            # calculate window for possible lengths
             main_len = self.count_to_len[ind, 1]
             left_len = max(main_len - self.dataset.n_bins // 2, 1)
             right_len = left_len + self.dataset.n_bins
             nums = []
             lens = []
+            # select all indexes inside window
             for cur_len in range(left_len, right_len + 1):
                 if cur_len in self.len_to_inds:
                     nums.append(len(self.len_to_inds[cur_len]))
@@ -144,6 +147,7 @@ class UltraDuperBigBrainBatchSampler(Sampler):
             if sum(nums) <= self.batch_size:
                 yield [yind for cur_len in lens for yind in self.len_to_inds[cur_len]]
             else:
+                # uniformly sample batch_size indexes
                 cum_nums = np.cumsum(nums)
                 batch_inds = np.random.choice(sum(nums), self.batch_size)
                 yield_inds = []

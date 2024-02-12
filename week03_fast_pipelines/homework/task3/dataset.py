@@ -4,6 +4,7 @@ import zipfile
 import gdown
 
 from PIL import Image
+import cv2
 from torch.utils.data import Dataset
 from torchvision import transforms
 
@@ -51,9 +52,9 @@ def download_extract_dataset():
 def get_train_transforms() -> tp.Any:
     return transforms.Compose(
         [
-            transforms.Resize((320, 320)),
+            transforms.Resize((320, 320), interpolation=transforms.InterpolationMode.NEAREST),
             transforms.CenterCrop(224),
-            transforms.RandomResizedCrop(224),
+            transforms.RandomResizedCrop(224, interpolation=transforms.InterpolationMode.NEAREST),
             transforms.RandomHorizontalFlip(),
             transforms.AugMix(),
             transforms.ToTensor(),
